@@ -1,0 +1,2 @@
+-21
+zbyt długa wiadomość SMS (przekroczono dopuszczalny limit)

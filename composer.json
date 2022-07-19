@@ -1,0 +1,33 @@
+{
+  "name": "bs/plus-notifier",
+  "version": "1.0.0",
+  "type": "symfony-notifier-bridge",
+  "description": "Symfony Plus MultiInfo Notifier Bridge",
+  "keywords": ["notifier", "sms", "plus", "multiinfo"],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Maciej Borkowski",
+      "email": "maciej.borkowski@borksoft.pl"
+    }
+  ],
+  "require": {
+    "php": ">=8.1",
+    "symfony/event-dispatcher": "^5.4||6.0",
+    "symfony/http-client": "^5.4||^6.0",
+    "symfony/http-foundation": "^5.4||^6.0",
+    "symfony/notifier": "^5.4||^6.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "9.5"
+  },
+  "autoload": {
+    "psr-4": {
+      "Bs\\Notifier\\Bridge\\Plus\\": ""
+    },
+    "exclude-from-classmap": [
+      "/Tests/"
+    ]
+  },
+  "minimum-stability": "dev"
+}
