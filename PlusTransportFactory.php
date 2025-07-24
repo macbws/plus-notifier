@@ -18,6 +18,12 @@ use Symfony\Component\Notifier\Transport\TransportInterface;
 
 class PlusTransportFactory extends AbstractTransportFactory
 {
+    public function __construct(
+            private readonly string $projectDir,
+    ) {
+        parent::__construct();
+    }
+
     public function create(Dsn $dsn): TransportInterface
     {
         $scheme = $dsn->getScheme();
@@ -30,7 +36,7 @@ class PlusTransportFactory extends AbstractTransportFactory
             $this->getUser($dsn),
             $this->getPassword($dsn),
             $dsn->getRequiredOption('service_id'),
-            $dsn->getRequiredOption('cert_file'),
+            str_replace('%kernel.project_dir%', $this->projectDir, $dsn->getRequiredOption('cert_file')),
             $dsn->getRequiredOption('cert_password'),
             $this->client,
             $this->dispatcher

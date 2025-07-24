@@ -19,12 +19,13 @@ use Symfony\Component\Notifier\Message\MessageInterface;
 use Symfony\Component\Notifier\Message\SentMessage;
 use Symfony\Component\Notifier\Message\SmsMessage;
 use Symfony\Component\Notifier\Test\TransportTestCase;
+use Symfony\Component\Notifier\Transport\TransportInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 
 class PlusTransportTest extends TransportTestCase
 {
-    public function createTransport(HttpClientInterface $client = null): PlusTransport
+    public static function createTransport(?HttpClientInterface $client = null): TransportInterface
     {
         return (new PlusTransport(
             'testlogin',
@@ -32,24 +33,24 @@ class PlusTransportTest extends TransportTestCase
             '00000',
             'cert.pem',
             'testcertpwd',
-            $client ?? $this->createMock(HttpClientInterface::class)))->setHost('host.test'
+            $client ?? (new PlusTransportTest)->createMock(HttpClientInterface::class)))->setHost('host.test'
         );
     }
 
-    public function toStringProvider(): iterable
+    public static function toStringProvider(): iterable
     {
-        yield ['plus://testlogin:testpwd@host.test?service_id=00000&cert_file=cert.pem&cert_password=testcertpwd', $this->createTransport()];
+        yield ['plus://testlogin:testpwd@host.test?service_id=00000&cert_file=cert.pem&cert_password=testcertpwd', self::createTransport()];
     }
 
-    public function supportedMessagesProvider(): iterable
+    public static function supportedMessagesProvider(): iterable
     {
         yield [new SmsMessage('48601357368', 'Hello!')];
     }
 
-    public function unsupportedMessagesProvider(): iterable
+    public static function unsupportedMessagesProvider(): iterable
     {
         yield [new ChatMessage('Hello!')];
-        yield [$this->createMock(MessageInterface::class)];
+        yield [(new PlusTransportTest)->createMock(MessageInterface::class)];
     }
 
     public function testSendSuccessfully(): void
@@ -58,7 +59,7 @@ class PlusTransportTest extends TransportTestCase
         $response->method('getStatusCode')->willReturn(200);
         $response->method('getContent')->willReturn(file_get_contents(__DIR__.'/Fixtures/success-response.txt'));
         $client = new MockHttpClient($response);
-        $transport = $this->createTransport($client);
+        $transport = self::createTransport($client);
         $sentMessage = $transport->send(new SmsMessage('48601357368', 'Hello!'));
 
         $this->assertInstanceOf(SentMessage::class, $sentMessage);
@@ -74,7 +75,7 @@ class PlusTransportTest extends TransportTestCase
         $response->method('getStatusCode')->willReturn($statusCode);
         $response->method('getContent')->willReturn($content);
         $client = new MockHttpClient($response);
-        $transport = $this->createTransport($client);
+        $transport = self::createTransport($client);
 
         $this->expectException(TransportException::class);
         $this->expectExceptionMessage($expectedExceptionMessage);
@@ -87,12 +88,12 @@ class PlusTransportTest extends TransportTestCase
         yield [
             404,
             'Lorem ipsum',
-            'Unable to send the SMS: Response status code 404.',
+            'Unable to send the SMS. Response status code 404.',
         ];
         yield [
             200,
             file_get_contents(__DIR__.'/Fixtures/failed-response.txt'),
-            'Unable to send the SMS: (-21) zbyt długa wiadomość SMS (przekroczono dopuszczalny limit)',
+            'Unable to send the SMS. Response from Plus MultiInfo server: (-21) zbyt długa wiadomość SMS (przekroczono dopuszczalny limit)',
         ];
     }
 }

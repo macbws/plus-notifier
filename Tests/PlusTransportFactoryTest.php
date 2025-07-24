@@ -18,33 +18,37 @@ class PlusTransportFactoryTest extends TransportFactoryTestCase
 {
     public function createFactory(): PlusTransportFactory
     {
-        return new PlusTransportFactory();
+        return new PlusTransportFactory('project_dir');
     }
 
-    public function supportsProvider(): iterable
+    public static function supportsProvider(): iterable
     {
         yield [true, 'plus://api_key@default'];
         yield [false, 'somethingElse://api_key@default'];
     }
 
-    public function createProvider(): iterable
+    public static function createProvider(): iterable
     {
         yield [
             'plus://testlogin:testpwd@host.test?service_id=00000&cert_file=cert.pem&cert_password=testcertpwd',
             'plus://testlogin:testpwd@host.test?service_id=00000&cert_file=cert.pem&cert_password=testcertpwd',
         ];
+        yield [
+                'plus://testlogin:testpwd@host.test?service_id=00000&cert_file=project_dir/cert.pem&cert_password=testcertpwd',
+                'plus://testlogin:testpwd@host.test?service_id=00000&cert_file=%kernel.project_dir%/cert.pem&cert_password=testcertpwd',
+        ];
     }
 
-    public function unsupportedSchemeProvider(): iterable
+    public static function unsupportedSchemeProvider(): iterable
     {
         yield ['somethingElse://api_key@default'];
     }
 
-    public function incompleteDsnProvider(): iterable
+    public static function incompleteDsnProvider(): iterable
     {
         yield [
             'plus://host.test?service_id=00000&cert_file=cert.pem&cert_password=testcertpwd',
-            'Invalid "plus://host.test?service_id=00000&cert_file=cert.pem&cert_password=testcertpwd" notifier DSN: User is not set.',
+            'Invalid "plus://host.test" notifier DSN: User is not set.',
         ];
         yield [
             'plus://testlogin@host.test?service_id=00000&cert_file=cert.pem&cert_password=testcertpwd',
@@ -52,7 +56,7 @@ class PlusTransportFactoryTest extends TransportFactoryTestCase
         ];
     }
 
-    public function missingRequiredOptionProvider(): iterable
+    public static function missingRequiredOptionProvider(): iterable
     {
         yield [
             'plus://testlogin:testpwd@host.test?service_id=00000&cert_file=cert.pem',

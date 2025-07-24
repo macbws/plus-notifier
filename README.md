@@ -24,3 +24,20 @@ example:
 ```yaml
 PLUS_DSN=plus://apiuser:PaSwOrD%%231@api1.multiinfo.plus.pl?service_id=00000&cert_file=%kernel.project_dir%/cert.pem&cert_password=PaSwOrD%%232
 ```
+
+## Configuring transport
+
+To make the transport visible in symfony/notifier, you need to add the following configuration to your Symfony application:
+
+```yaml
+# config/services.yaml
+
+Bs\Notifier\Bridge\Plus\PlusTransportFactory:
+    tags: ['notifier.transport_factory']
+    arguments:
+        $projectDir: '%kernel.project_dir%'
+
+Symfony\Component\Notifier\Transport:
+    arguments:
+        $factories: !tagged_iterator notifier.transport_factory
+```

@@ -88,13 +88,13 @@ class PlusTransport extends AbstractTransport
         $responseContent = preg_split('/\r\n|\r|\n/', $response->getContent(false));
 
         if (Response::HTTP_OK !== $statusCode) {
-            $errorMessage = sprintf('Unable to send the SMS: Response status code %s.', $statusCode);
+            $errorMessage = sprintf('Unable to send the SMS. Response status code %s.', $statusCode);
 
             throw new TransportException($errorMessage, $response);
         }
 
         if ('0' !== $responseContent[0]) {
-            $errorMessage = sprintf('Unable to send the SMS: (%s) %s', $responseContent[0], $responseContent[1]);
+            $errorMessage = sprintf('Unable to send the SMS. Response from Plus MultiInfo server: (%s) %s', $responseContent[0], $responseContent[1]);
 
             throw new TransportException($errorMessage, $response);
         }

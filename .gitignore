@@ -1,4 +1,6 @@
+compose.yaml
 /composer.lock
+/docker/
 /phpunit.xml
 /.phpunit.result.cache
 /vendor/

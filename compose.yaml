@@ -1,0 +1,16 @@
+services:
+  php:
+    build:
+      context: ./docker/php
+    image:
+      bs/plus-notifier-php:latest
+    container_name: bs_plus_notifier_php
+    ports:
+      - "9901:9000"
+    volumes:
+      - .:/app:rw
+    networks:
+      - appnet
+networks:
+  appnet:
+    driver: bridge
